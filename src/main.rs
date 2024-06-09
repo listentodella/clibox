@@ -7,7 +7,7 @@ fn main() -> anyhow::Result<()> {
     match opts.cmd {
         SubCommand::Csv(csv_opts) => {
             println!("get opts {:?}", csv_opts);
-            process_csv(&csv_opts.input, &csv_opts.output)?;
+            process_csv(&csv_opts.input, csv_opts.output, csv_opts.format)?;
         }
     }
 

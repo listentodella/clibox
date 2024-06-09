@@ -32,15 +32,14 @@ pub struct CsvOpts {
     /// 输入文件名
     #[arg(short, long, value_parser = find_filename )]
     pub input: String,
-    //提供了默认值, 以字符串的方式接收
+    //不再通过clap的宏提供默认值,则对于该选项,可以考虑用Option,然后在代码里处理
     /// 输出文件名
-    #[arg(short, long, default_value = "output.json")] //"output.json".into()
-    pub output: String,
+    #[arg(short, long)] //"output.json".into()
+    pub output: Option<String>,
     // 对于自定义类型,必须提供解析函数
     /// 输出格式
     #[arg(short, long, value_parser = parse_format, default_value = "json")]
     pub format: OutputFormat,
-    //提供了默认值, 以字符的方式接收
     //提供了默认值, 以字符的方式接收
     /// 分隔符
     #[arg(short, long, default_value_t = ',')]
@@ -68,6 +67,7 @@ fn parse_format(format: &str) -> Result<OutputFormat, anyhow::Error> {
 }
 
 // 为目标类型 实现 From trait, 该类型就可以转换为 str
+// 同时意味着, Into trait被自动实现
 impl From<OutputFormat> for &'static str {
     fn from(format: OutputFormat) -> Self {
         match format {
@@ -92,6 +92,7 @@ impl FromStr for OutputFormat {
 }
 
 // 为目标类型实现 Display trait, 那么该类型就可以打印了
+// 这意味着, print, format等系列函数/宏可以直接使用该类型
 impl fmt::Display for OutputFormat {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", Into::<&str>::into(*self))

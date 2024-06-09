@@ -3,6 +3,8 @@ use csv::Reader;
 use serde::{Deserialize, Serialize};
 use std::fs;
 
+use crate::mycli::OutputFormat;
+
 //使用serde的序列化、反序列化
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "PascalCase")]
@@ -16,7 +18,13 @@ struct Item {
     kit: u8,
 }
 
-pub fn process_csv(input: &str, output: &str) -> Result<()> {
+pub fn process_csv(input: &str, output: Option<String>, format: OutputFormat) -> Result<()> {
+    let output = if let Some(o) = output {
+        o.clone()
+    } else {
+        format!("output.{}", format)
+    };
+
     let mut ret = Vec::new();
     let mut reader = Reader::from_path(input)?;
     for i in reader.deserialize() {
