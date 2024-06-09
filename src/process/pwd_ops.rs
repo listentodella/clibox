@@ -2,6 +2,8 @@
 // 其中的choose()方法可以返回对切片中随机元素的引用
 // 如果切片为空,则返回None
 use rand::seq::SliceRandom;
+// 用于评估密码强度,
+use zxcvbn::zxcvbn;
 
 const UPPER: &[u8] = b"ABCDEFGHJKLMNPQRSTUVWXYZ";
 const LOWER: &[u8] = b"abcdefghijkmnopqrstuvwxyz";
@@ -9,6 +11,7 @@ const NUMBER: &[u8] = b"123456789";
 const SYMBOL: &[u8] = b"!@#$%^&*_,./[]{}~()-+=?<>";
 
 pub fn process_pwd(
+    check: bool,
     len: u8,
     upper: bool,
     lower: bool,
@@ -18,6 +21,18 @@ pub fn process_pwd(
     let mut rng = rand::thread_rng();
     let mut password = Vec::new();
     let mut chars = Vec::new();
+
+    let score = |x| zxcvbn(x, &[]).score();
+
+    if check {
+        let mut input = String::new();
+        let _ = std::io::stdin().read_line(&mut input);
+        // 移除可能的换行符
+        let input = input.trim_end();
+        println!("your input = {}, score = {}", input, score(input));
+
+        return Ok(());
+    }
 
     // 根据下面的4个if,决定了chars能包含哪几类的字符
     // 尽管每种都可能提前塞了字符在password里,但是shuffle方法可以随机打乱
@@ -61,7 +76,8 @@ pub fn process_pwd(
     // "洗牌",随机打乱
     password.shuffle(&mut rng);
 
-    println!("{}", String::from_utf8(password)?);
+    let password = String::from_utf8(password)?;
+    println!("{}, score = {}", password, score(&password));
 
     Ok(())
 }

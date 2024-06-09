@@ -103,6 +103,9 @@ impl fmt::Display for OutputFormat {
 
 #[derive(Debug, Parser)]
 pub struct PwdOpts {
+    // 密码强度检查
+    #[arg(short, long, default_value_t = false)]
+    pub check: bool,
     /// 随机密码的长度,默认16
     #[arg(short = 'L', long, default_value_t = 16)]
     pub len: u8,

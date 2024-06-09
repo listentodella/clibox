@@ -10,6 +10,7 @@ fn main() -> anyhow::Result<()> {
             process_csv(&csv_opts.input, csv_opts.output, csv_opts.format)?;
         }
         SubCommand::Pwd(pwd_opts) => process_pwd(
+            pwd_opts.check,
             pwd_opts.len,
             pwd_opts.uppercase,
             pwd_opts.lowercase,
