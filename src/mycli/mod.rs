@@ -1,5 +1,5 @@
 use clap::Parser;
-use std::path::Path;
+use std::{fmt, path::Path, str::FromStr};
 
 //对该复合类型使用clap::Parser派生宏
 #[derive(Debug, Parser)]
@@ -18,6 +18,12 @@ pub enum SubCommand {
     Csv(CsvOpts),
 }
 
+#[derive(Debug, Clone, Copy)]
+pub enum OutputFormat {
+    Json,
+    Yaml,
+}
+
 // 对于结构体,必须将每一个想要对外暴露的成员使用pub修饰
 #[derive(Debug, Parser)]
 pub struct CsvOpts {
@@ -28,8 +34,13 @@ pub struct CsvOpts {
     pub input: String,
     //提供了默认值, 以字符串的方式接收
     /// 输出文件名
-    #[arg(short, long, default_value = "output.json")]
+    #[arg(short, long, default_value = "output.json")] //"output.json".into()
     pub output: String,
+    // 对于自定义类型,必须提供解析函数
+    /// 输出格式
+    #[arg(short, long, value_parser = parse_format, default_value = "json")]
+    pub format: OutputFormat,
+    //提供了默认值, 以字符的方式接收
     //提供了默认值, 以字符的方式接收
     /// 分隔符
     #[arg(short, long, default_value_t = ',')]
@@ -45,5 +56,44 @@ fn find_filename(filename: &str) -> Result<String, &'static str> {
         Ok(filename.into())
     } else {
         Err("未找到目标文件")
+    }
+}
+
+fn parse_format(format: &str) -> Result<OutputFormat, anyhow::Error> {
+    //pub fn parse<F: FromStr>(&self) -> Result<F, F::Err> {
+    //看函数原型,想要使用parse(),就必须为目标类型实现FromStr
+    //下面为 OutputFormat 实现了 FromStr
+    //因此可以使用parse()去解析str,并将其转换为 OutputFormat了
+    format.parse()
+}
+
+// 为目标类型 实现 From trait, 该类型就可以转换为 str
+impl From<OutputFormat> for &'static str {
+    fn from(format: OutputFormat) -> Self {
+        match format {
+            OutputFormat::Json => "json",
+            OutputFormat::Yaml => "yaml",
+        }
+    }
+}
+
+// 为目标类型实现 FromStr trait, 那么 str 就可以转换为该类型
+impl FromStr for OutputFormat {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "json" => Ok(OutputFormat::Json),
+            "yaml" => Ok(OutputFormat::Yaml),
+            // 使用anyhow宏来定义错误
+            _ => Err(anyhow::anyhow!("invalid format")),
+        }
+    }
+}
+
+// 为目标类型实现 Display trait, 那么该类型就可以打印了
+impl fmt::Display for OutputFormat {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", Into::<&str>::into(*self))
     }
 }
