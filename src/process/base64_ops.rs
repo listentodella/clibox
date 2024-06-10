@@ -1,7 +1,5 @@
-use crate::{
-    mycli::{Base64DecodeOpts, Base64EncodeOpts, Base64Format},
-    Base64SubCommand,
-};
+use crate::mycli::base64::{Base64DecodeOpts, Base64EncodeOpts, Base64Format, Base64SubCommand};
+
 use anyhow::{Ok, Result};
 use base64::{
     engine::general_purpose::{STANDARD, URL_SAFE_NO_PAD},

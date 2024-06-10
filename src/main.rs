@@ -1,6 +1,12 @@
 //mycli csv -i -o output.json --header -d ','
 use clap::Parser;
-use mycli::{CmdExcutor, Opts};
+use clibox::{CmdExcutor, Opts};
+// 如果想使用下面的方式,必须在lib.rs里以pub的方式声明mycli
+// 第一个mycli名称是这个crate的名称
+// 第二个mycli名称是root下的mod的名称
+// use mycli::mycli::Opts;
+// 给整个crate改名为clibox后,用下面的表述方式,减少混淆, 不过依然需要mycli为pub才行
+// use clibox::mycli::Opts;
 
 //告诉编译器使用tokio作为异步运行时
 #[tokio::main]

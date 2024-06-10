@@ -6,7 +6,7 @@ use rand::seq::SliceRandom;
 // 用于评估密码强度,
 use zxcvbn::zxcvbn;
 
-use crate::{mycli::PwdOpts, CmdExcutor};
+use crate::{mycli::pwd::PwdOpts, CmdExcutor};
 
 const UPPER: &[u8] = b"ABCDEFGHJKLMNPQRSTUVWXYZ";
 const LOWER: &[u8] = b"abcdefghijkmnopqrstuvwxyz";
