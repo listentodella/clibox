@@ -3,7 +3,10 @@ use csv::Reader;
 use serde::{Deserialize, Serialize};
 use std::fs;
 
-use crate::mycli::OutputFormat;
+use crate::{
+    mycli::{CsvOpts, OutputFormat},
+    CmdExcutor,
+};
 
 //使用serde的序列化、反序列化
 #[derive(Debug, Deserialize, Serialize)]
@@ -56,4 +59,15 @@ pub fn process_csv(input: &str, output: Option<String>, format: OutputFormat) ->
     fs::write(output, content)?;
 
     Ok(())
+}
+
+impl CmdExcutor for CsvOpts {
+    async fn execute(self) -> anyhow::Result<()> {
+        let output = if let Some(output) = self.output {
+            output
+        } else {
+            format!("output.{}", self.format)
+        };
+        process_csv(&self.input, Some(output), self.format)
+    }
 }

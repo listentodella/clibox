@@ -1,10 +1,42 @@
-use crate::mycli::Base64Format;
+use crate::{
+    mycli::{Base64DecodeOpts, Base64EncodeOpts, Base64Format},
+    Base64SubCommand,
+};
 use anyhow::{Ok, Result};
 use base64::{
     engine::general_purpose::{STANDARD, URL_SAFE_NO_PAD},
     Engine as _,
 };
 use std::{fs::File, io::Read};
+
+use crate::CmdExcutor;
+
+impl CmdExcutor for Base64DecodeOpts {
+    async fn execute(self) -> anyhow::Result<()> {
+        //let mut reader = get_reader(&self.input)?;
+        //let ret = process_base64_decode(&mut reader, self.format)?;
+        //todo!();
+        process_base64_decode(&self.input, self.format)?;
+
+        Ok(())
+    }
+}
+
+impl CmdExcutor for Base64EncodeOpts {
+    async fn execute(self) -> anyhow::Result<()> {
+        process_base64_encode(&self.input, self.format)?;
+        Ok(())
+    }
+}
+
+impl CmdExcutor for Base64SubCommand {
+    async fn execute(self) -> anyhow::Result<()> {
+        match self {
+            Base64SubCommand::Encode(opts) => opts.execute().await,
+            Base64SubCommand::Decode(opts) => opts.execute().await,
+        }
+    }
+}
 
 fn get_reader(input: &str) -> Result<Box<dyn Read>> {
     let reader: Box<dyn Read> = if input == "-" {

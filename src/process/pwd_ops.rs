@@ -1,9 +1,12 @@
+use anyhow::Ok;
 // 引入SliceRandom trait
 // 其中的choose()方法可以返回对切片中随机元素的引用
 // 如果切片为空,则返回None
 use rand::seq::SliceRandom;
 // 用于评估密码强度,
 use zxcvbn::zxcvbn;
+
+use crate::{mycli::PwdOpts, CmdExcutor};
 
 const UPPER: &[u8] = b"ABCDEFGHJKLMNPQRSTUVWXYZ";
 const LOWER: &[u8] = b"abcdefghijkmnopqrstuvwxyz";
@@ -80,4 +83,19 @@ pub fn process_pwd(
     println!("{}, score = {}", password, score(&password));
 
     Ok(())
+}
+
+impl CmdExcutor for PwdOpts {
+    async fn execute(self) -> anyhow::Result<()> {
+        process_pwd(
+            self.check,
+            self.len,
+            self.uppercase,
+            self.lowercase,
+            self.number,
+            self.symbol,
+        )?;
+
+        Ok(())
+    }
 }

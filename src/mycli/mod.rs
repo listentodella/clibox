@@ -1,5 +1,16 @@
+use crate::CmdExcutor;
 use clap::Parser;
 use std::{fmt, path::Path, str::FromStr};
+
+impl CmdExcutor for SubCommand {
+    async fn execute(self) -> anyhow::Result<()> {
+        match self {
+            SubCommand::Csv(opts) => opts.execute().await,
+            SubCommand::Pwd(opts) => opts.execute().await,
+            SubCommand::Base64(subcmd) => subcmd.execute().await,
+        }
+    }
+}
 
 //对该复合类型使用clap::Parser派生宏
 #[derive(Debug, Parser)]

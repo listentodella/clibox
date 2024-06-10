@@ -1,30 +1,21 @@
 //mycli csv -i -o output.json --header -d ','
 use clap::Parser;
-use mycli::{
-    process_base64_decode, process_base64_encode, process_csv, process_pwd, Base64SubCommand, Opts,
-    SubCommand,
-};
+use mycli::{CmdExcutor, Opts};
 
-fn main() -> anyhow::Result<()> {
-    let opts = Opts::parse();
-    match opts.cmd {
-        SubCommand::Csv(csv_opts) => {
-            println!("get opts {:?}", csv_opts);
-            process_csv(&csv_opts.input, csv_opts.output, csv_opts.format)?;
-        }
-        SubCommand::Pwd(pwd_opts) => process_pwd(
-            pwd_opts.check,
-            pwd_opts.len,
-            pwd_opts.uppercase,
-            pwd_opts.lowercase,
-            pwd_opts.number,
-            pwd_opts.symbol,
-        )?,
-        SubCommand::Base64(subcmd) => match subcmd {
-            Base64SubCommand::Encode(opts) => process_base64_encode(&opts.input, opts.format)?,
-            Base64SubCommand::Decode(opts) => process_base64_decode(&opts.input, opts.format)?,
-        },
-    }
+//告诉编译器使用tokio作为异步运行时
+#[tokio::main]
+//函数前面加上 async,它就会变成由异步运行时安排的异步任务
+async fn main() -> anyhow::Result<()> {
+    //tracing库在Rust中用于生成日志和追踪信息
+    //然而它本身并不负责将这些信息打印或记录到某个地方
+    //这个任务是由所谓的“订阅者”（Subscriber）或“收集器”（Collector）来完成的
+    //tracing-subscriber正是这样一个库，它提供了多种“订阅者”的实现
+    //用于收集,处理和输出tracing生成的日志和追踪信息
+    tracing_subscriber::fmt::init();
+    //let opts = Opts::parse();
+    //opts.cmd.execute().await?;
+    //只有遇到 await 关键字,它对应的async函数才会被执行
+    Opts::parse().cmd.execute().await?;
 
     Ok(())
 }
