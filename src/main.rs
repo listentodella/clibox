@@ -1,6 +1,9 @@
 //mycli csv -i -o output.json --header -d ','
 use clap::Parser;
-use mycli::{process_csv, process_pwd, Opts, SubCommand};
+use mycli::{
+    process_base64_decode, process_base64_encode, process_csv, process_pwd, Base64SubCommand, Opts,
+    SubCommand,
+};
 
 fn main() -> anyhow::Result<()> {
     let opts = Opts::parse();
@@ -17,6 +20,10 @@ fn main() -> anyhow::Result<()> {
             pwd_opts.number,
             pwd_opts.symbol,
         )?,
+        SubCommand::Base64(subcmd) => match subcmd {
+            Base64SubCommand::Encode(opts) => process_base64_encode(&opts.input, opts.format)?,
+            Base64SubCommand::Decode(opts) => process_base64_decode(&opts.input, opts.format)?,
+        },
     }
 
     Ok(())
