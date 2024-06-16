@@ -1,12 +1,14 @@
 pub mod base64;
 pub mod csv;
 pub mod pwd;
+pub mod raw;
 
 use crate::CmdExcutor;
 use base64::Base64SubCommand;
 use clap::Parser;
 use csv::CsvOpts;
 use pwd::PwdOpts;
+use raw::RawSubCommand;
 
 impl CmdExcutor for SubCommand {
     async fn execute(self) -> anyhow::Result<()> {
@@ -14,6 +16,7 @@ impl CmdExcutor for SubCommand {
             SubCommand::Csv(opts) => opts.execute().await,
             SubCommand::Pwd(opts) => opts.execute().await,
             SubCommand::Base64(subcmd) => subcmd.execute().await,
+            SubCommand::Raw(subcmd) => subcmd.execute().await,
         }
     }
 }
@@ -37,4 +40,6 @@ pub enum SubCommand {
     Pwd(PwdOpts),
     #[command(subcommand)]
     Base64(Base64SubCommand),
+    #[command(subcommand)]
+    Raw(RawSubCommand),
 }
