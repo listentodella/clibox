@@ -1,9 +1,8 @@
+use crate::{mycli::csv::CsvOpts, CmdExcutor, OutputFormat};
 use anyhow::Result;
 use csv::Reader;
 use serde::{Deserialize, Serialize};
 use std::fs;
-
-use crate::{mycli::csv::CsvOpts, CmdExcutor, OutputFormat};
 
 //使用serde的序列化、反序列化
 #[derive(Debug, Deserialize, Serialize)]

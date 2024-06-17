@@ -14,7 +14,11 @@ pub enum RawSubCommand {
 pub struct RawEncodeOpts {
     #[arg(short, long, value_parser = crate::find_filename, default_value = "-")]
     pub input: String,
-    #[arg(short, long, value_parser = parse_raw_format, default_value = "standard")]
+    //不再通过clap的宏提供默认值,则对于该选项,可以考虑用Option,然后在代码里处理
+    /// 输出文件名
+    #[arg(short, long)] //"output.bin".into()
+    pub output: Option<String>,
+    #[arg(short, long, value_parser = parse_raw_format, default_value = "bin")]
     pub format: RawFormat,
 }
 
